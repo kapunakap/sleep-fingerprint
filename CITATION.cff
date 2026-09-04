@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this code, cite the repository and the public source dataset."
+title: "sleep-fingerprint"
+type: software
+license: MIT
+repository-code: "https://github.com/kapunakap/sleep-fingerprint"
+authors:
+  - name: "sleep-fingerprint contributors"
+references:
+  - type: dataset
+    title: "A ballistocardiogram dataset with reference sensor signals in long-term natural sleep environments"
+    url: "https://doi.org/10.6084/m9.figshare.26013157"
