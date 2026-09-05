@@ -12,7 +12,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
 from sleep_fingerprint.plos_multichannel import (
     FEATURE_VARIANTS,
@@ -265,10 +264,13 @@ def main() -> None:
 
     normalized = feature_results["normalized_spectrum"]["disjoint_cross_sensor"]
     _write_csv(OUT / "pair_metrics_normalized_spectrum.csv", normalized["pair_metrics"])
-    _write_csv(OUT / "per_participant_normalized_spectrum.csv", [
-        {"participant_id": participant, **values}
-        for participant, values in normalized["per_participant"].items()
-    ])
+    _write_csv(
+        OUT / "per_participant_normalized_spectrum.csv",
+        [
+            {"participant_id": participant, **values}
+            for participant, values in normalized["per_participant"].items()
+        ],
+    )
     _write_csv(OUT / "queries_normalized_spectrum.csv", normalized["queries"])
     _plot_pair_heatmap(normalized["pair_metrics"])
     _plot_setup_prediction(setup_rows)
