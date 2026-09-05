@@ -1,25 +1,23 @@
-name: research-experiments
+name: research-primary
 
 on:
   push:
     branches:
       - codex/issue-1-poc-experiment-evidence
     paths:
-      - "src/sleep_fingerprint/experiment.py"
-      - "src/sleep_fingerprint/manifest.py"
-      - "src/sleep_fingerprint/plos_multichannel.py"
-      - "tests/test_experiment.py"
-      - "scripts/run_plos_cross_sensor.py"
-      - ".github/workflows/research-experiments.yml"
+      - "src/sleep_fingerprint/primary_experiment.py"
+      - "scripts/run_primary_experiments.py"
+      - "tests/test_primary_experiment.py"
+      - ".github/workflows/research-primary.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  plos-cross-sensor:
+  primary-cross-night:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,26 +33,26 @@ jobs:
           python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
       - name: Unit and scientific-invariant tests
         run: pytest
-      - name: Lint new experiment code
+      - name: Lint primary experiment code
         run: |
           ruff check \
-            src/sleep_fingerprint/experiment.py \
-            src/sleep_fingerprint/manifest.py \
-            src/sleep_fingerprint/plos_multichannel.py \
-            tests/test_experiment.py \
-            scripts/run_plos_cross_sensor.py
+            src/sleep_fingerprint/primary_experiment.py \
+            scripts/run_primary_experiments.py \
+            tests/test_primary_experiment.py
       - name: Type check
         run: mypy src
-      - name: Run full public cross-sensor experiment
-        run: python scripts/run_plos_cross_sensor.py
-      - name: Commit measured public-data results
+      - name: Disk before primary experiment
+        run: df -h .
+      - name: Run pinned 212-night primary experiment
+        run: python scripts/run_primary_experiments.py
+      - name: Commit measured primary results
         run: |
           git config user.name "sleep-fingerprint-research-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add metrics/plos_cross_sensor plots/plos_cross_sensor
+          git add metrics/primary_cross_night plots/primary_cross_night
           if git diff --cached --quiet; then
-            echo "No generated result changes"
+            echo "No generated primary result changes"
           else
-            git commit -m "results: add measured PLOS cross-sensor evidence"
+            git commit -m "results: reproduce primary cross-night control"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
