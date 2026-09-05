@@ -213,8 +213,14 @@ def main() -> None:
                 "chronologically with ceil(heldout/2) validation and the rest test"
             ),
             "split_summary": split_summary,
-            "preprocessing": "140 Hz -> 64 Hz; 60 s windows, 30 s stride; QC; per-window robust z; respiratory 0.08-0.7 Hz; cardiac 0.7-15 Hz",
-            "night_embedding": "up to 12 evenly spaced accepted windows; median handcrafted features; StandardScaler fit on train nights only; L2 cosine retrieval",
+            "preprocessing": (
+                "140 Hz -> 64 Hz; 60 s windows, 30 s stride; QC; per-window robust z; "
+                "respiratory 0.08-0.7 Hz; cardiac 0.7-15 Hz"
+            ),
+            "night_embedding": (
+                "up to 12 evenly spaced accepted windows; median handcrafted features; "
+                "StandardScaler fit on train nights only; L2 cosine retrieval"
+            ),
             "installation_interpretation": (
                 "night_id is not installation_id; bed/mattress/sensor/device/installation identity unknown"
             ),
@@ -263,9 +269,12 @@ def main() -> None:
             for participant, metrics in primary["test"]["per_participant"].items()
         ],
     )
-    pd.DataFrame(primary["test"]["confusion_matrix"], index=primary["test"]["labels"], columns=primary["test"]["labels"]).to_csv(
-        OUT / "test_confusion.csv"
+    confusion = pd.DataFrame(
+        primary["test"]["confusion_matrix"],
+        index=primary["test"]["labels"],
+        columns=primary["test"]["labels"],
     )
+    confusion.to_csv(OUT / "test_confusion.csv")
     _plot_confusion(primary["test"]["confusion_matrix"], primary["test"]["labels"])
     _plot_ablation(ablation_rows)
     _plot_similarity_summary(primary)
