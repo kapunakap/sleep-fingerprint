@@ -108,7 +108,7 @@ def temporal_blocks(sample_count: int, fs_hz: float = PLOS_SOURCE_FS_HZ) -> dict
         "query": (start + 2 * block, end),
     }
     ordered = [ranges[name] for name in ("enroll", "middle", "query")]
-    if any(a1 > b0 for (_, a1), (b0, _) in zip(ordered, ordered[1:], strict=True)):
+    if any(a1 > b0 for (_, a1), (b0, _) in zip(ordered, ordered[1:], strict=False)):
         raise AssertionError("temporal blocks overlap")
     return ranges
 
@@ -349,9 +349,7 @@ def cross_sensor_retrieval(
         for query_sensor in range(len(SENSOR_LABELS)):
             if enroll_sensor == query_sensor:
                 continue
-            subjects, matrix = _pair_similarity(
-                features, variant, enroll_sensor, query_sensor, query_block=query_block
-            )
+            subjects, matrix = _pair_similarity(features, variant, enroll_sensor, query_sensor, query_block=query_block)
             matrices.append((enroll_sensor, query_sensor, subjects, matrix))
     metrics = _metrics_from_matrices(matrices, bootstrap_repetitions=bootstrap_repetitions)
     subjects, matrix = _pair_similarity(features, variant, 3, 6, query_block=query_block)
@@ -380,10 +378,7 @@ def setup_prediction(
     predictions = np.full(labels.shape, -1, dtype=int)
     splitter = GroupKFold(n_splits=5)
     for train_index, test_index in splitter.split(matrix, labels, groups=group_array):
-        model = make_pipeline(
-            StandardScaler(),
-            LogisticRegression(max_iter=5000, solver="lbfgs"),
-        )
+        model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=5000, solver="lbfgs"))
         model.fit(matrix[train_index], labels[train_index])
         predictions[test_index] = model.predict(matrix[test_index])
     if np.any(predictions < 0):
@@ -527,10 +522,7 @@ def normalized_edge_signature(values: np.ndarray, source_fs_hz: float = PLOS_SOU
     return hashlib.sha256(rounded.tobytes()).hexdigest()
 
 
-def duplicate_signature_audit(
-    subject_id: str,
-    bcg: np.ndarray,
-) -> list[dict[str, str]]:
+def duplicate_signature_audit(subject_id: str, bcg: np.ndarray) -> list[dict[str, str]]:
     ranges = temporal_blocks(bcg.shape[1])
     seconds = int(round(10 * PLOS_SOURCE_FS_HZ))
     rows: list[dict[str, str]] = []
