@@ -1,0 +1,25 @@
+name: research-probe
+
+on:
+  push:
+    branches:
+      - codex/issue-1-poc-experiment-evidence
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  plos-structure-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install probe dependencies
+        run: python -m pip install --upgrade pip numpy scipy requests h5py
+      - name: Inspect one PLOS multichannel participant file
+        run: python scripts/probe_plos.py
