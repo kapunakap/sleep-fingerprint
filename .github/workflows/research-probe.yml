@@ -10,9 +10,9 @@ permissions:
   contents: read
 
 jobs:
-  plos-structure-probe:
+  public-data-structure-probes:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -20,6 +20,8 @@ jobs:
           python-version: "3.11"
           cache: pip
       - name: Install probe dependencies
-        run: python -m pip install --upgrade pip numpy scipy requests h5py
+        run: python -m pip install --upgrade pip numpy scipy pandas openpyxl requests h5py
       - name: Inspect one PLOS multichannel participant file
         run: python scripts/probe_plos.py
+      - name: Inspect independent transfer metadata
+        run: python scripts/probe_transfer.py
