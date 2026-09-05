@@ -192,11 +192,12 @@ def require_real_label_provenance(
     provenance_field: str,
 ) -> None:
     seen = 0
+    forbidden = ("synthetic", "inferred from participant", "invented")
     for record in records:
         if record.get(label_field) in {None, ""}:
             raise ValueError(f"missing evaluation label {label_field}")
         provenance = str(record.get(provenance_field) or "").strip().lower()
-        if not provenance or any(token in provenance for token in ("synthetic", "inferred from participant", "invented")):
+        if not provenance or any(token in provenance for token in forbidden):
             raise ValueError(f"unsafe provenance for {label_field}: {provenance!r}")
         seen += 1
     if not seen:

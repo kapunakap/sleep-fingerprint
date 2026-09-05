@@ -70,7 +70,9 @@ def primary_manifest_record(
         installation_id_provenance=(
             "unknown; source does not report removal/reinstallation boundaries and night is not treated as installation"
         ),
-        sensor_position_provenance="dataset paper protocol; dataset-level placement, not a per-night reinstallation record",
+        sensor_position_provenance=(
+            "dataset paper protocol; dataset-level placement, not a per-night reinstallation record"
+        ),
         recording_location_provenance="dataset paper protocol; dormitory natural-sleep environment",
         recording_date_provenance="source filename/date token" if recording_date else "unknown",
     )
@@ -93,9 +95,10 @@ def assert_evaluation_label_is_source_backed(
     label_field: str,
 ) -> None:
     provenance_field = f"{label_field}_provenance"
-    if not hasattr(InstallationAwareRecord, "__dataclass_fields__") or label_field not in InstallationAwareRecord.__dataclass_fields__:
+    fields = InstallationAwareRecord.__dataclass_fields__
+    if label_field not in fields:
         raise ValueError(f"unknown manifest label field: {label_field}")
-    if provenance_field not in InstallationAwareRecord.__dataclass_fields__:
+    if provenance_field not in fields:
         raise ValueError(f"missing provenance column for label: {label_field}")
     for record in records:
         value = getattr(record, label_field)

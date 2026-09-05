@@ -154,7 +154,9 @@ def _plos_manifest() -> list[dict[str, Any]]:
             rows.append(
                 {
                     "participant_id": participant,
-                    "participant_id_provenance": "PLOS supplement number s001-s027; paper maps one file to one proband",
+                    "participant_id_provenance": (
+                        "PLOS supplement number s001-s027; paper maps one file to one proband"
+                    ),
                     "night_id": None,
                     "session_id": f"s{subject:03d}",
                     "session_id_provenance": "source supplement file identity; not an installation identifier",
@@ -164,7 +166,9 @@ def _plos_manifest() -> list[dict[str, Any]]:
                     "sensor_id_provenance": "paper-defined simultaneous BCG channel label",
                     "device_id": None,
                     "installation_id": None,
-                    "installation_id_provenance": "unknown; source does not define removal/reinstallation boundaries",
+                    "installation_id_provenance": (
+                        "unknown; source does not define removal/reinstallation boundaries"
+                    ),
                     "sensor_position": sensor_position,
                     "sensor_position_provenance": "paper-defined physical sensor location",
                     "recording_location": None,
@@ -224,7 +228,10 @@ def main() -> None:
     manifest = _plos_manifest()
     metric_payload = {
         "dataset": {
-            "title": "Multichannel ballistocardiography: A comparative analysis of heartbeat detection across different body locations",
+            "title": (
+                "Multichannel ballistocardiography: A comparative analysis of heartbeat "
+                "detection across different body locations"
+            ),
             "doi": PLOS_DOI,
             "license": PLOS_LICENSE,
             "participants": len(PLOS_SUBJECTS),
@@ -240,10 +247,16 @@ def main() -> None:
         },
         "protocol": {
             "interpretation": "same-session cross-sensor/cross-location proxy; not cross-night and not reinstallation",
-            "temporal_split": "30 s margins; remaining recording split into three contiguous thirds; enrollment=first third, query=last third",
+            "temporal_split": (
+                "30 s margins; remaining recording split into three contiguous thirds; "
+                "enrollment=first third, query=last third"
+            ),
             "window_seconds": 30,
             "feature_scaling": "StandardScaler fit on enrollment vectors only, followed by L2 normalization",
-            "sensor_pairs": "all 56 directed off-diagonal sensor-location pairs; S4->S7 predeclared far-location pair reported separately",
+            "sensor_pairs": (
+                "all 56 directed off-diagonal sensor-location pairs; S4->S7 predeclared "
+                "far-location pair reported separately"
+            ),
             "chance_rank_1": 1 / len(PLOS_SUBJECTS),
         },
         "features": feature_results,

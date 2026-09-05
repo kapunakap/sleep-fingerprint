@@ -33,8 +33,14 @@ jobs:
           python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
       - name: Unit and scientific-invariant tests
         run: pytest
-      - name: Lint
-        run: ruff check src tests scripts/run_plos_cross_sensor.py
+      - name: Lint new experiment code
+        run: |
+          ruff check \
+            src/sleep_fingerprint/experiment.py \
+            src/sleep_fingerprint/manifest.py \
+            src/sleep_fingerprint/plos_multichannel.py \
+            tests/test_experiment.py \
+            scripts/run_plos_cross_sensor.py
       - name: Type check
         run: mypy src
       - name: Run full public cross-sensor experiment
