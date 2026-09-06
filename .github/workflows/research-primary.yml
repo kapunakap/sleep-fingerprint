@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   primary-cross-night:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
@@ -35,14 +35,8 @@ jobs:
           python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
       - name: Unit and scientific-invariant tests
         run: pytest
-      - name: Lint primary experiment code
-        run: |
-          ruff check \
-            src/sleep_fingerprint/dataset.py \
-            src/sleep_fingerprint/primary_experiment.py \
-            scripts/run_primary_experiments.py \
-            tests/test_pipeline.py \
-            tests/test_primary_experiment.py
+      - name: Lint current tree
+        run: ruff check src tests scripts
       - name: Type check
         run: mypy src
       - name: Disk before primary experiment
