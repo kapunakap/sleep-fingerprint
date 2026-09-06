@@ -1,6 +1,6 @@
-from pathlib import Path
 import math
 import zipfile
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -8,7 +8,13 @@ import torch
 
 from sleep_fingerprint.dataset import DatasetError, parse_bcg_csv, safe_extract_zip, sanitize_zip_member, verify_archive
 from sleep_fingerprint.encoder import CrossNightPairSampler, SleepFingerprintEncoder, WindowRecord
-from sleep_fingerprint.preprocess import PreprocessConfig, iter_night_windows, quality_reasons, resample_signal, separate_components
+from sleep_fingerprint.preprocess import (
+    PreprocessConfig,
+    iter_night_windows,
+    quality_reasons,
+    resample_signal,
+    separate_components,
+)
 from sleep_fingerprint.retrieval import evaluate_retrieval
 from sleep_fingerprint.split import make_night_splits
 

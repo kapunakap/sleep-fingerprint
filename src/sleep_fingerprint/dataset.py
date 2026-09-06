@@ -280,8 +280,24 @@ def audit_dataset(dataset_root: Path) -> tuple[list[ManifestRecord], dict[str, A
             bad.append({"source_path": relative, "reason": str(error)})
             continue
         reference = path.parent.parent / "Reference"
-        rr = any(_date_from_name(p.name) == date for p in reference.rglob("*") if p.is_file() and p.parent.name.lower() == "rr") if reference.exists() else False
-        resp = any(_date_from_name(p.name) == date for p in reference.rglob("*") if p.is_file() and p.parent.name.lower() == "resp") if reference.exists() else False
+        rr = (
+            any(
+                _date_from_name(p.name) == date
+                for p in reference.rglob("*")
+                if p.is_file() and p.parent.name.lower() == "rr"
+            )
+            if reference.exists()
+            else False
+        )
+        resp = (
+            any(
+                _date_from_name(p.name) == date
+                for p in reference.rglob("*")
+                if p.is_file() and p.parent.name.lower() == "resp"
+            )
+            if reference.exists()
+            else False
+        )
         records.append(
             ManifestRecord(
                 subject_id=subject,
@@ -312,7 +328,12 @@ def audit_dataset(dataset_root: Path) -> tuple[list[ManifestRecord], dict[str, A
     return records, stats, bad
 
 
-def write_audit(records: list[ManifestRecord], stats: dict[str, Any], bad: list[dict[str, str]], output_dir: Path) -> None:
+def write_audit(
+    records: list[ManifestRecord],
+    stats: dict[str, Any],
+    bad: list[dict[str, str]],
+    output_dir: Path,
+) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     payload = [asdict(record) for record in records]
     pd.DataFrame(payload).to_csv(output_dir / "manifest.csv", index=False)

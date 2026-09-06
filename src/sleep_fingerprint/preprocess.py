@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Iterator
 
 import numpy as np
 from scipy.signal import butter, detrend, resample_poly, sosfiltfilt
