@@ -1,0 +1,43 @@
+{
+  "dataset": {
+    "article_id": 28643153,
+    "api_url": "https://api.figshare.com/v2/articles/28643153",
+    "title": "A ballistocardiogram dataset with reference ECG signals for bed-based heart rhythm assessment",
+    "license": "CC BY 4.0",
+    "sampling_hz": 125,
+    "metadata_file": "Overall_info.xlsx",
+    "bcg_file_pattern": "SubXX_bcg.csv"
+  },
+  "representation": {
+    "name": "frozen_source_band_spectrum_v1",
+    "status": "fixed source-defined representation; no target labels used to fit representation",
+    "source_definition": "primary sleep-fingerprint respiratory/cardiac frequency boundaries and phase-insensitive spectrum summaries",
+    "used_samples_per_subject": 60000,
+    "range_bytes_per_subject": 3000000,
+    "windows": 8,
+    "window_seconds": 60,
+    "decimation": 2,
+    "effective_sampling_hz": 62.5,
+    "fft_n": 4096,
+    "band_edges_hz": [0.08,0.11,0.15,0.2,0.27,0.36,0.48,0.7,0.9,1.15,1.45,1.8,2.2,2.7,3.3,4.0,4.8,5.8,7.0,8.4,10.0,12.0,15.0],
+    "features": "22 log band energies + respiratory peak + cardiac peak + respiratory entropy + cardiac entropy + cardiac centroid + log high/fundamental cardiac power ratio",
+    "normalization": "per-window linear detrend + robust median/MAD; median aggregation across 8 non-overlapping windows",
+    "feature_dim": 28
+  },
+  "split": {
+    "method": "deterministic seeded subject-only 5-fold assignment; every participant appears in exactly one test fold",
+    "fold_count": 5,
+    "seed": 20260906
+  },
+  "probe": {
+    "model": "ridge regression used as linear score probe",
+    "ridge_alpha": 10.0,
+    "target_fit": "StandardScaler fit on target training subjects inside each fold, then ridge probe; representation remains frozen",
+    "classification_threshold": 0.5
+  },
+  "bootstrap": {
+    "method": "stratified subject bootstrap over out-of-fold persistent-AF predictions",
+    "iterations": 20000,
+    "seed": 20260906
+  }
+}
