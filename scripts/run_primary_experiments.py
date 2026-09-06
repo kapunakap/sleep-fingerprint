@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import csv
 import json
+import os
+import subprocess
 from collections import Counter
 from dataclasses import asdict
 from pathlib import Path
@@ -51,6 +53,17 @@ def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         writer = csv.DictWriter(handle, fieldnames=columns)
         writer.writeheader()
         writer.writerows(rows)
+
+
+def _source_commit_sha() -> str | None:
+    if github_sha := os.environ.get("GITHUB_SHA"):
+        return github_sha
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, stderr=subprocess.DEVNULL
+        ).strip()
+    except (OSError, subprocess.CalledProcessError):
+        return None
 
 
 def _plot_confusion(matrix: list[list[int]], labels: list[str]) -> None:
@@ -173,22 +186,34 @@ def main() -> None:
     collisions = duplicate_signature_collisions(features)
     physiology_rows = add_reference_physiology(physiology_rows, manifest, EXTRACTED)
     physiology = physiology_metrics(physiology_rows)
+    physiology["reference_counts"] = {
+        "heart_rate_matched_nights": int(
+            sum(row.get("reference_heart_bpm") is not None and row.get("bcg_heart_bpm") is not None for row in physiology_rows)
+        ),
+        "respiratory_rate_matched_nights": int(
+            sum(row.get("reference_resp_bpm") is not None and row.get("bcg_resp_bpm") is not None for row in physiology_rows)
+        ),
+        "heart_rate_reference_samples": int(sum(int(row.get("reference_heart_samples") or 0) for row in physiology_rows)),
+        "respiratory_reference_samples": int(sum(int(row.get("reference_resp_samples") or 0) for row in physiology_rows)),
+        "bcg_estimator": "median per-night spectral peak from accepted 60 s BCG windows",
+    }
     installation_manifest = installation_aware_primary_manifest(records)
 
     primary = variants["combined_normalized"]
     expected_reproduction = {
+        "metric_semantics": "rank estimates are participant-weighted means; query_count is the raw held-out-night count",
         "expected_validation_queries": 64,
-        "expected_validation_rank_1": 0.25,
-        "expected_validation_rank_5": 0.53125,
-        "expected_test_queries": 64,
+        "expected_validation_rank_1": 0.296875,
+        "expected_validation_rank_5": 0.65625,
+        "expected_test_queries": 54,
         "expected_test_rank_1": 0.25,
         "expected_test_rank_5": 0.59375,
         "query_counts_match": (
-            primary["val"]["query_count"] == 64 and primary["test"]["query_count"] == 64
+            primary["val"]["query_count"] == 64 and primary["test"]["query_count"] == 54
         ),
         "metrics_match_to_1e_12": (
-            abs(float(primary["val"]["rank_1"]["estimate"]) - 0.25) < 1e-12
-            and abs(float(primary["val"]["rank_5"]["estimate"]) - 0.53125) < 1e-12
+            abs(float(primary["val"]["rank_1"]["estimate"]) - 0.296875) < 1e-12
+            and abs(float(primary["val"]["rank_5"]["estimate"]) - 0.65625) < 1e-12
             and abs(float(primary["test"]["rank_1"]["estimate"]) - 0.25) < 1e-12
             and abs(float(primary["test"]["rank_5"]["estimate"]) - 0.59375) < 1e-12
         ),
@@ -197,6 +222,11 @@ def main() -> None:
         raise RuntimeError(f"primary reproduction checkpoint mismatch: {expected_reproduction}")
 
     payload = {
+        "provenance": {
+            "source_commit_sha": _source_commit_sha(),
+            "reproduction_command": "python scripts/run_primary_experiments.py",
+            "validation_commands": ["pytest", "ruff check src tests scripts", "mypy src"],
+        },
         "dataset": {
             "article_id": 26013157,
             "file_id": 46976602,
@@ -227,6 +257,11 @@ def main() -> None:
             "installation_interpretation": (
                 "night_id is not installation_id; bed/mattress/sensor/device/installation identity unknown"
             ),
+        },
+        "qc": {
+            "accepted_nights": len(features),
+            "accepted_windows": int(sum(int(row["accepted_windows"]) for row in features)),
+            "rejected_window_counts": "not retained by the current extractor; do not infer",
         },
         "reproduction_of_prior_control": expected_reproduction,
         "variants": variants,
