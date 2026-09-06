@@ -6,8 +6,10 @@ on:
       - codex/issue-1-poc-experiment-evidence
     paths:
       - "src/sleep_fingerprint/primary_experiment.py"
+      - "src/sleep_fingerprint/dataset.py"
       - "scripts/run_primary_experiments.py"
       - "tests/test_primary_experiment.py"
+      - "tests/test_pipeline.py"
       - ".github/workflows/research-primary.yml"
   workflow_dispatch:
 
@@ -36,8 +38,10 @@ jobs:
       - name: Lint primary experiment code
         run: |
           ruff check \
+            src/sleep_fingerprint/dataset.py \
             src/sleep_fingerprint/primary_experiment.py \
             scripts/run_primary_experiments.py \
+            tests/test_pipeline.py \
             tests/test_primary_experiment.py
       - name: Type check
         run: mypy src
