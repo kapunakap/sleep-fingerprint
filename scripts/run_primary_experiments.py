@@ -180,19 +180,22 @@ def main() -> None:
         "expected_validation_queries": 64,
         "expected_validation_rank_1": 0.25,
         "expected_validation_rank_5": 0.53125,
-        "expected_test_queries": 54,
-        "expected_test_rank_1": 14 / 54,
-        "expected_test_rank_5": 0.5,
+        "expected_test_queries": 64,
+        "expected_test_rank_1": 0.25,
+        "expected_test_rank_5": 0.59375,
         "query_counts_match": (
-            primary["val"]["query_count"] == 64 and primary["test"]["query_count"] == 54
+            primary["val"]["query_count"] == 64 and primary["test"]["query_count"] == 64
         ),
         "metrics_match_to_1e_12": (
             abs(float(primary["val"]["rank_1"]["estimate"]) - 0.25) < 1e-12
             and abs(float(primary["val"]["rank_5"]["estimate"]) - 0.53125) < 1e-12
-            and abs(float(primary["test"]["rank_1"]["estimate"]) - 14 / 54) < 1e-12
-            and abs(float(primary["test"]["rank_5"]["estimate"]) - 0.5) < 1e-12
+            and abs(float(primary["test"]["rank_1"]["estimate"]) - 0.25) < 1e-12
+            and abs(float(primary["test"]["rank_5"]["estimate"]) - 0.59375) < 1e-12
         ),
     }
+    if not expected_reproduction["query_counts_match"] or not expected_reproduction["metrics_match_to_1e_12"]:
+        raise RuntimeError(f"primary reproduction checkpoint mismatch: {expected_reproduction}")
+
     payload = {
         "dataset": {
             "article_id": 26013157,
