@@ -188,20 +188,32 @@ def main() -> None:
     physiology = physiology_metrics(physiology_rows)
     physiology["reference_counts"] = {
         "heart_rate_matched_nights": int(
-            sum(row.get("reference_heart_bpm") is not None and row.get("bcg_heart_bpm") is not None for row in physiology_rows)
+            sum(
+                row.get("reference_heart_bpm") is not None and row.get("bcg_heart_bpm") is not None
+                for row in physiology_rows
+            )
         ),
         "respiratory_rate_matched_nights": int(
-            sum(row.get("reference_resp_bpm") is not None and row.get("bcg_resp_bpm") is not None for row in physiology_rows)
+            sum(
+                row.get("reference_resp_bpm") is not None and row.get("bcg_resp_bpm") is not None
+                for row in physiology_rows
+            )
         ),
-        "heart_rate_reference_samples": int(sum(int(row.get("reference_heart_samples") or 0) for row in physiology_rows)),
-        "respiratory_reference_samples": int(sum(int(row.get("reference_resp_samples") or 0) for row in physiology_rows)),
+        "heart_rate_reference_samples": int(
+            sum(int(row.get("reference_heart_samples") or 0) for row in physiology_rows)
+        ),
+        "respiratory_reference_samples": int(
+            sum(int(row.get("reference_resp_samples") or 0) for row in physiology_rows)
+        ),
         "bcg_estimator": "median per-night spectral peak from accepted 60 s BCG windows",
     }
     installation_manifest = installation_aware_primary_manifest(records)
 
     primary = variants["combined_normalized"]
     expected_reproduction = {
-        "metric_semantics": "rank estimates are participant-weighted means; query_count is the raw held-out-night count",
+        "metric_semantics": (
+            "rank estimates are participant-weighted means; query_count is the raw held-out-night count"
+        ),
         "expected_validation_queries": 64,
         "expected_validation_rank_1": 0.296875,
         "expected_validation_rank_5": 0.65625,

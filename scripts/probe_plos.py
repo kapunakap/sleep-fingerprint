@@ -50,7 +50,12 @@ def describe(value: Any, name: str, depth: int = 0) -> None:
 
 def main() -> None:
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    with requests.get(URL, stream=True, timeout=(30, 120), headers={"User-Agent": "sleep-fingerprint-research/0.1"}) as response:
+    with requests.get(
+        URL,
+        stream=True,
+        timeout=(30, 120),
+        headers={"User-Agent": "sleep-fingerprint-research/0.1"},
+    ) as response:
         response.raise_for_status()
         with OUT.open("wb") as handle:
             for chunk in response.iter_content(8 * 1024 * 1024):

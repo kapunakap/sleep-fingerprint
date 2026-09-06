@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Iterable, Mapping
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any
 
 import numpy as np
 from scipy.integrate import trapezoid
@@ -57,7 +58,14 @@ def run_handcrafted_baseline(
             positions = np.linspace(0, len(accepted) - 1, max_windows_per_night, dtype=int)
             accepted = [accepted[i] for i in sorted(set(positions.tolist()))]
         feature = np.median(np.stack([handcrafted_window_features(w) for w in accepted]), axis=0)
-        night_rows.append({"subject_id": str(record["subject_id"]), "night_key": str(record["night_key"]), "split": split, "feature": feature})
+        night_rows.append(
+            {
+                "subject_id": str(record["subject_id"]),
+                "night_key": str(record["night_key"]),
+                "split": split,
+                "feature": feature,
+            }
+        )
     train = [row for row in night_rows if row["split"] == "train"]
     if not train:
         raise ValueError("no train-night features survived QC")
