@@ -29,7 +29,7 @@ See:
 - `reports/transfer.md` — frozen independent-domain transfer protocol and results;
 - `reports/dataset-search.md` — public dataset search and rejection reasons;
 - `reports/hardware-decision.md` — hardware gate;
-- `metrics/primary_cross_night/` and `plots/primary_cross_night/` — completed post-fix primary package;
+- `metrics/primary_cross_night/` and `plots/primary_cross_night/` — completed post-fix primary package, including `signal_example.svg` with a representative QC-accepted raw/resampled/respiratory/cardiac trace;
 - `metrics/plos_cross_sensor/` and `plots/plos_cross_sensor/` — fresh cross-sensor/location rerun;
 - `metrics/transfer_28643153/` — completed frozen-transfer metrics;
 - `metrics/primary_cross_night/recovered_run_33995935636.json` — preserved partial historical recovery artifact, not used as the final primary package.
@@ -48,7 +48,7 @@ Per participant, the first `floor(n/2)` chronological nights are enrollment/trai
 
 The source does not establish sensor removal/reinstallation between nights. `night_id != installation_id`; installation remains unknown. Therefore this is **cross-night**, not cross-installation.
 
-The extractor accepted all 212 nights and **181,557** windows. Rejected-window counts are **not retained by the current extractor; do not infer**.
+The extractor accepted all 212 nights and **181,557** windows. Rejected-window counts are **not retained by the current extractor; do not infer**. The representative signal SVG is a derived visualization from the CC BY 4.0 primary source; the repository still does not redistribute the raw archive or raw CSVs.
 
 ## Leakage and confound rules
 
