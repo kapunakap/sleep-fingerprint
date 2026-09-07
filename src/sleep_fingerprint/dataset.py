@@ -196,7 +196,9 @@ def parse_bcg_csv(path: Path, default_fs_hz: float = 140.0) -> ParsedBCG:
             try:
                 value = float(text)
             except ValueError as error:
-                if not saw_body and any(token in text.casefold() for token in ("bcg", "signal", "value", "data")):
+                if not saw_body and any(
+                    token in text.casefold() for token in ("bcg", "signal", "value", "data", "resp")
+                ):
                     continue
                 raise DatasetError(f"malformed BCG value at line {line_number}") from error
             if not np.isfinite(value):

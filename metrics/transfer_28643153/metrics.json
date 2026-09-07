@@ -1,0 +1,97 @@
+{
+  "status": "measured",
+  "measurement_date": "2026-09-06",
+  "measurement_runtime": "Playwright browser using direct Figshare API/file streaming; committed script reproduces the same frozen protocol",
+  "config_sha256": "75a911d2f748170cd8b668b5a4760ec987919e24e6bc9ddbf11950e820d93224",
+  "dataset": {
+    "article_id": 28643153,
+    "title": "A ballistocardiogram dataset with reference ECG signals for bedside heart rhythm assessment",
+    "license": "CC BY 4.0",
+    "subjects": 46,
+    "sampling_hz": 125,
+    "metadata_file": {"name": "Overall_info.xlsx", "figshare_file_id": 53303201, "bytes": 31012},
+    "bcg_files": 46,
+    "used_samples_per_subject": 60000,
+    "used_minutes_per_subject": 8.0
+  },
+  "representation": {
+    "name": "frozen_source_band_spectrum_v1",
+    "status": "fixed source-defined representation; no target labels used to fit representation",
+    "source_definition": "primary sleep-fingerprint respiratory/cardiac frequency boundaries and phase-insensitive spectrum summaries",
+    "used_samples_per_subject": 60000,
+    "range_bytes_per_subject": 3000000,
+    "windows": 8,
+    "window_seconds": 60,
+    "decimation": 2,
+    "effective_sampling_hz": 62.5,
+    "fft_n": 4096,
+    "band_edges_hz": [0.08,0.11,0.15,0.2,0.27,0.36,0.48,0.7,0.9,1.15,1.45,1.8,2.2,2.7,3.3,4.0,4.8,5.8,7.0,8.4,10.0,12.0,15.0],
+    "features": "22 log band energies + respiratory peak + cardiac peak + respiratory entropy + cardiac entropy + cardiac centroid + log high/fundamental cardiac power ratio",
+    "normalization": "per-window linear detrend + robust median/MAD; median aggregation across 8 non-overlapping windows",
+    "feature_dim": 28
+  },
+  "split": {
+    "method": "deterministic seeded subject-only 5-fold assignment; every participant appears in exactly one test fold",
+    "fold_count": 5,
+    "seed": 20260906,
+    "folds": {
+      "0": [10,15,21,22,25,30,32,36,43,46],
+      "1": [3,6,19,24,26,35,38,42,44],
+      "2": [2,7,9,11,14,20,29,34,40],
+      "3": [4,5,12,23,27,31,37,41,45],
+      "4": [1,8,13,16,17,18,28,33,39]
+    }
+  },
+  "probe": {
+    "model": "ridge regression used as linear score probe",
+    "ridge_alpha": 10.0,
+    "target_fit": "StandardScaler fit on target training subjects inside each fold, then ridge probe; representation remains frozen",
+    "classification_threshold": 0.5
+  },
+  "age_regression": {
+    "n": 46,
+    "age_min": 27,
+    "age_max": 93,
+    "mae_years": 11.278254254371355,
+    "rmse_years": 15.641847851399238,
+    "pearson": -0.149061234766012,
+    "spearman": -0.13690095176352135,
+    "baseline_train_mean_mae_years": 9.68507638072855,
+    "baseline_train_mean_rmse_years": 14.033848139088787,
+    "verdict": "failed baseline"
+  },
+  "broad_af": {
+    "definition": "persistent atrial fibrillation or paroxysmal atrial flutter in Conclusion, or any non-empty/non-'/' Atrial Fibrillation event field",
+    "n": 46,
+    "positive": 20,
+    "negative": 26,
+    "auroc": 0.55,
+    "auprc": 0.4937300668065139,
+    "accuracy": 0.6086956521739131,
+    "balanced_accuracy": 0.601923076923077,
+    "majority_accuracy": 0.5652173913043478,
+    "trivial_balanced_accuracy": 0.5,
+    "verdict": "weak"
+  },
+  "persistent_af": {
+    "definition": "Conclusion contains exact phrase 'persistent atrial fibrillation'",
+    "selection_note": "exploratory continuous-rhythm endpoint selected after inspecting available clinical metadata; not confirmatory",
+    "n": 46,
+    "positive": 17,
+    "negative": 29,
+    "auroc": 0.7119675456389453,
+    "auprc": 0.6193095278389398,
+    "accuracy": 0.717391304347826,
+    "balanced_accuracy": 0.6906693711967546,
+    "majority_accuracy": 0.6304347826086957,
+    "trivial_balanced_accuracy": 0.5,
+    "subject_bootstrap_95ci": {
+      "method": "20,000-iteration stratified subject bootstrap over out-of-fold predictions",
+      "seed": 20260906,
+      "auroc": [0.54969574,0.86004057],
+      "auprc": [0.46113629,0.81400234],
+      "balanced_accuracy": [0.55070994,0.82555781]
+    }
+  },
+  "gate_3_interpretation": "met as measurable independent cardiovascular transfer, but evidence is modest/exploratory and does not override setup/time confounds"
+}

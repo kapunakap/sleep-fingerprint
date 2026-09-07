@@ -1,0 +1,85 @@
+{
+  "status": "partial_run_recovered_from_github_actions_log",
+  "scientific_use": "The retrieval/ablation measurements below completed on all 212 primary nights before the same run failed later while reading the first respiratory-reference CSV header. They are real measurements from current experiment code at a00fd4ad2d3a6dddb313ac7560fb7687bc780ed0, but this artifact is not a substitute for the final post-fix checkpoint because per-query similarities, participant-cluster bootstrap output, confusion matrices, and physiology-reference output were not persisted before the late failure.",
+  "github_actions": {
+    "run_id": 33995935636,
+    "job_id": 101386377572,
+    "source_commit": "a00fd4ad2d3a6dddb313ac7560fb7687bc780ed0",
+    "software_gates_before_experiment": {
+      "pytest": "25 passed in 3.33s",
+      "ruff": "all checks passed",
+      "mypy": "success; no issues found in 14 source files"
+    },
+    "terminal_failure": "Resp reference CSV header was 'Resp'; parse_bcg_csv rejected it before the parser fix added on this branch."
+  },
+  "dataset": {
+    "figshare_article_id": 26013157,
+    "figshare_file_id": 46976602,
+    "archive": "dataset.zip",
+    "bytes": 1624767747,
+    "md5": "5f1b50277e000a56b2b8d3df4f6ad81c",
+    "participants": 32,
+    "nights": 212,
+    "source_fs_hz": 140,
+    "installation_interpretation": "unknown; night_id is not installation_id"
+  },
+  "split": {
+    "name": "chronological_half_split",
+    "description": "Per participant, sort nights chronologically. First floor(n/2) nights enroll/train; remaining nights are split chronologically into validation then test.",
+    "validation_queries": 64,
+    "test_queries": 64,
+    "chance_rank_1": 0.03125,
+    "chance_rank_5": 0.15625
+  },
+  "metrics": {
+    "combined_normalized": {
+      "validation": {"rank_1": 0.296875, "rank_5": 0.65625},
+      "test": {"rank_1": 0.25, "rank_5": 0.59375}
+    },
+    "cardiac_only": {
+      "validation": {"rank_1": 0.265625, "rank_5": 0.625},
+      "test": {"rank_1": 0.296875, "rank_5": 0.515625}
+    },
+    "respiratory_only": {
+      "validation": {"rank_1": 0.140625, "rank_5": 0.40625},
+      "test": {"rank_1": 0.125, "rank_5": 0.4375}
+    },
+    "phase_insensitive_spectral": {
+      "validation": {"rank_1": 0.171875, "rank_5": 0.5},
+      "test": {"rank_1": 0.15625, "rank_5": 0.53125}
+    },
+    "morphology_heavy": {
+      "validation": {"rank_1": 0.375, "rank_5": 0.71875},
+      "test": {"rank_1": 0.484375, "rank_5": 0.671875}
+    },
+    "amplitude_bearing": {
+      "validation": {"rank_1": 0.234375, "rank_5": 0.546875},
+      "test": {"rank_1": 0.25, "rank_5": 0.640625}
+    },
+    "random_temporal_half": {
+      "validation": {"rank_1": 0.203125, "rank_5": 0.59375},
+      "test": {"rank_1": 0.296875, "rank_5": 0.625}
+    },
+    "early_to_late": {
+      "validation": {"rank_1": 0.03125, "rank_5": 0.234375},
+      "test": {"rank_1": 0.03125, "rank_5": 0.234375}
+    },
+    "late_to_early": {
+      "validation": {"rank_1": 0.0625, "rank_5": 0.3125},
+      "test": {"rank_1": 0.109375, "rank_5": 0.234375}
+    }
+  },
+  "fallback_query_bootstrap_95ci": {
+    "warning": "Computed from the aggregate correct-query counts only, resampling 64 queries. This is a fallback diagnostic, NOT the predeclared participant-cluster bootstrap and must not be presented as the final requested CI.",
+    "validation_rank_1": [0.1875, 0.40625],
+    "validation_rank_5": [0.53125, 0.765625],
+    "test_rank_1": [0.140625, 0.359375],
+    "test_rank_5": [0.46875, 0.71875]
+  },
+  "post_run_fix": {
+    "parser_fix_commit": "bf747f1c0a456e83c221ccdad354cb0f89cfbbc3",
+    "regression_test_commit": "635ae1ecfa7b1146ddfd985275807605e3dcbe23",
+    "rerun_trigger_commit": "2ef8cc329d052401a2a6dfd728bb09c2e2c4980e",
+    "latest_rerun_status": "GitHub created a failed job with no runner steps; therefore post-fix experiment output is not available yet."
+  }
+}

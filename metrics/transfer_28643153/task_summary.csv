@@ -1,0 +1,4 @@
+task,primary_metric,estimate,baseline,n_positive,n_negative,interpretation
+age_regression,MAE_years,11.278254254371355,9.68507638072855,,,failed train-mean baseline
+broad_af,AUROC,0.55,0.5,20,26,weak exploratory transfer
+persistent_af,AUROC,0.7119675456389453,0.5,17,29,exploratory continuous-rhythm endpoint

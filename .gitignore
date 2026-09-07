@@ -1,6 +1,7 @@
 # Public datasets / generated research artifacts
 /data/*
 !/data/.gitkeep
+/.research-cache/
 /artifacts/
 /checkpoints/
 /reports/local/

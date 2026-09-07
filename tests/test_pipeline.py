@@ -28,6 +28,14 @@ def test_parse_bcg_csv(tmp_path: Path) -> None:
     assert parsed.start_timestamp_utc_plus_08 is not None
 
 
+def test_parse_resp_reference_header(tmp_path: Path) -> None:
+    path = tmp_path / "night_Resp.csv"
+    path.write_text("Resp\n1.0\n2.0\n3.0\n")
+    parsed = parse_bcg_csv(path, default_fs_hz=20.0)
+    assert parsed.signal.tolist() == [1.0, 2.0, 3.0]
+    assert parsed.source_fs_hz == 20.0
+
+
 def test_parse_rejects_bad_value(tmp_path: Path) -> None:
     path = tmp_path / "night_BCG.csv"
     path.write_text("1,1700000000,140\nnope,,\n")
