@@ -1,0 +1,29 @@
+# Public datasets / generated research artifacts
+/data/*
+!/data/.gitkeep
+/artifacts/
+/checkpoints/
+/reports/local/
+*.zip
+*.npy
+*.npz
+*.pt
+*.pth
+*.ckpt
+*.parquet
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Local state
+.env
+.env.*
+.DS_Store
