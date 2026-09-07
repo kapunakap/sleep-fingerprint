@@ -5,7 +5,7 @@
   "config_sha256": "75a911d2f748170cd8b668b5a4760ec987919e24e6bc9ddbf11950e820d93224",
   "dataset": {
     "article_id": 28643153,
-    "title": "A ballistocardiogram dataset with reference ECG signals for bed-based heart rhythm assessment",
+    "title": "A ballistocardiogram dataset with reference ECG signals for bedside heart rhythm assessment",
     "license": "CC BY 4.0",
     "subjects": 46,
     "sampling_hz": 125,

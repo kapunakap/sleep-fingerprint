@@ -8,40 +8,47 @@ Evidence-first proof of concept for testing whether public raw under-mattress ba
 
 **Hardware: NOT YET.**
 
-The three original scientific POC gates now have supporting evidence, including a real frozen independent-domain cardiovascular transfer result. However, the evidence does **not** establish a physiology-only fingerprint independent of bed/sensor/placement/installation effects, and the complete post-parser-fix primary artifact is still pending because current GitHub Actions jobs fail before runner steps are assigned.
+The requested public-data POC is reproducible end-to-end, including the post-parser-fix 212-night primary package and an independent frozen cardiovascular-transfer experiment. The evidence is promising but does **not** establish a physiology-only fingerprint independent of bed/sensor/placement/installation effects.
 
 Key measured evidence:
 
-- primary 32-person natural-sleep control, chronological held-out nights: test Rank-1 **25.0%**, Rank-5 **59.4%** vs 3.1% / 15.6% chance;
+- primary 32-person natural-sleep control, chronological held-out nights: participant-weighted test Rank-1 **25.0%** (participant-bootstrap 95% CI **14.1-37.5%**) and Rank-5 **59.4%** (**43.8-75.0%**) vs 3.1% / 15.6% chance; raw test query count is 54;
+- primary verification AUROC **0.817**; same-person cosine similarity mean **0.472** vs different-person **-0.014**;
 - primary early-window enrollment -> late-window query collapses to **3.1% Rank-1**, exactly chance;
+- primary BCG-vs-reference heart rate is strong in this simple spectral check: 42 matched nights, MAE **2.42 bpm**, median AE **2.00 bpm**, Pearson **0.960**; respiratory-rate validation is poor: 53 matched nights, MAE **8.49 bpm**, median AE **7.50 bpm**, Pearson **-0.149**;
 - strongest setup-changing proxy, 27 people across eight physical BCG sensor locations: Rank-1 **14.2%** (participant-bootstrap 95% CI 11.1-17.9%), Rank-5 **40.6%** (34.7-46.8%), verification AUROC **0.676**;
-- sensor-location prediction reaches **48-57%** for several feature families vs 12.5% chance;
+- sensor-location prediction reaches **48-57%** for several feature families vs 12.5% chance, showing strong setup information;
 - independent Figshare `28643153` frozen 28-D source-defined spectrum representation -> persistent-AF probe: **AUROC 0.712**, AUPRC **0.619**, balanced accuracy **0.691**, with 17 positive / 29 negative subjects and subject-only 5-fold CV;
 - the same frozen representation **fails age regression baseline** (MAE 11.28 vs 9.69 years) and gives only weak broad-AF transfer (AUROC 0.550), so the successful endpoint is reported as exploratory rather than confirmatory.
 
-No verified public dataset with repeated-person raw BCG plus explicit sensor removal/reinstallation and identity mapping has been found.
+No verified public dataset currently combines repeated identity-mapped participants, an explicit removal/reinstallation boundary, raw BCG, and participant mapping across installations.
 
 See:
 
-- `reports/cross-installation.md` — setup/time confounds and measured cross-sensor evidence;
+- `reports/cross-installation.md` — primary cross-night and setup-confound evidence;
 - `reports/transfer.md` — frozen independent-domain transfer protocol and results;
 - `reports/dataset-search.md` — public dataset search and rejection reasons;
 - `reports/hardware-decision.md` — hardware gate;
-- `metrics/plos_cross_sensor/` — committed cross-sensor metrics/CSVs;
-- `metrics/transfer_28643153/` — committed frozen-transfer metrics/CSVs;
-- `metrics/primary_cross_night/recovered_run_33995935636.json` — real retrieval measurements recovered from the full primary run that failed later during reference parsing.
+- `metrics/primary_cross_night/` and `plots/primary_cross_night/` — completed post-fix primary package;
+- `metrics/plos_cross_sensor/` and `plots/plos_cross_sensor/` — fresh cross-sensor/location rerun;
+- `metrics/transfer_28643153/` — completed frozen-transfer metrics;
+- `metrics/primary_cross_night/recovered_run_33995935636.json` — preserved partial historical recovery artifact, not used as the final primary package.
 
-## Primary dataset
+## Primary dataset and protocol
 
-Figshare article `26013157`, file `46976602` (`dataset.zip`), CC BY 4.0.
+Figshare article `26013157`, file `46976602` (`dataset.zip`), **CC BY 4.0**.
 
-- size: `1,624,767,747` bytes
+- exact size: `1,624,767,747` bytes
 - MD5: `5f1b50277e000a56b2b8d3df4f6ad81c`
 - source rate: 140 Hz
-- cohort: 32 participants, 212 nights
+- cohort: 32 participants, 212 valid nights
 - H70030 piezoelectric film beneath the mattress near the chest
 
-The source does not establish sensor removal/reinstallation between nights. `night_id != installation_id`; installation remains unknown.
+Per participant, the first `floor(n/2)` chronological nights are enrollment/train. Remaining nights are split chronologically with `ceil(heldout/2)` for validation and the rest for test: **94 train / 64 validation / 54 test nights**. Rank estimates are participant-weighted means; `query_count` remains the raw held-out-night count.
+
+The source does not establish sensor removal/reinstallation between nights. `night_id != installation_id`; installation remains unknown. Therefore this is **cross-night**, not cross-installation.
+
+The extractor accepted all 212 nights and **181,557** windows. Rejected-window counts are **not retained by the current extractor; do not infer**.
 
 ## Leakage and confound rules
 
@@ -54,7 +61,7 @@ The source does not establish sensor removal/reinstallation between nights. `nig
 
 ## Frozen independent transfer
 
-Target: Figshare `28643153`, CC BY 4.0, 46 participants, ages 27-93, overnight 125 Hz mattress BCG with synchronized Holter ECG and demographic/clinical metadata.
+Target: Figshare `28643153`, **A ballistocardiogram dataset with reference ECG signals for bedside heart rhythm assessment**, CC BY 4.0, 46 participants, ages 27-93, overnight 125 Hz mattress BCG with synchronized Holter ECG and demographic/clinical metadata.
 
 The fixed 28-D representation uses source-defined respiratory/cardiac spectral bands and is applied unchanged to every target participant. Only a training-fold standardizer and ridge probe are fitted. Exact configuration, folds, metrics, predictions and plots are committed under `configs/transfer_28643153.json`, `metrics/transfer_28643153/`, and `plots/transfer_28643153/`.
 
@@ -65,36 +72,24 @@ python3.11 -m venv .venv
 . .venv/bin/activate
 pip install -e '.[dev,encoder]'
 
-# Primary pinned dataset workflow
-python -m sleep_fingerprint download --data-dir data
-python -m sleep_fingerprint extract --data-dir data --destination data/extracted
-python -m sleep_fingerprint audit --dataset-root data/extracted --output-dir data/reports
 python scripts/run_primary_experiments.py
-
-# PLOS eight-sensor proxy
 python scripts/run_plos_cross_sensor.py
-
-# Independent frozen transfer
 python scripts/run_transfer.py
 
-# Software checks
 pytest
 ruff check src tests scripts
 mypy src
+git diff --check
 ```
 
-Raw third-party datasets and large archives are not committed or redistributed.
+The primary runner pins and verifies the Figshare archive, extracts it safely, audits 212 nights, runs the leakage-safe experiment and negative controls, validates reference physiology, checks the exact historical reproduction checkpoint, then writes the final package. Raw third-party datasets and large archives are not committed or redistributed.
 
-## CI / primary-artifact status
+## CI status
 
-A full primary-data Actions run passed **25 tests**, ruff and mypy before the late `Resp` reference-header parser failure. The parser is fixed and regression-tested in commits `bf747f1c0a456e83c221ccdad354cb0f89cfbbc3` and `635ae1ecfa7b1146ddfd985275807605e3dcbe23`.
+The latest hosted GitHub Actions jobs observed for the foundation and experiment branches fail before any workflow step is assigned (`steps: null`). This is characterized as runner/startup infrastructure failure, **not** as a green run and not as a code-executed failure. Local executed validation is therefore recorded separately on the exact accepted branch heads.
 
-Current hosted retries create jobs but assign **no runner steps**, including fresh CI and transfer runs. Therefore this is presently characterized as an Actions runner/startup failure, not a code-executed failure. The requested post-fix primary package (participant-cluster CIs, similarities, AUROC, per-participant table, confusion matrix, accepted-window counts and physiology-reference metrics) must still be regenerated before the research task is called acceptance-complete.
+## POC conclusion
 
-## Success gates
+The three Issue #1 science gates are supported by public data, but setup/time confounds remain material. Cross-night identity is clearly above chance and survives a changed physical BCG location above chance; a frozen independent cardiovascular probe is measurable. However, setup is strongly predictable, early-to-late identity collapses to chance, respiration validation is poor, and a true same-person reinstallation dataset is still missing.
 
-- [x] public raw mattress BCG is usable;
-- [x] leakage-safe held-out-night identity is materially above chance;
-- [x] a frozen source-defined representation shows measurable transfer to an independent cardiovascular task/domain.
-
-The **original three science gates are now supported**, but Issue #1 remains open until the complete post-fix primary evidence artifact is regenerated and current CI is either executed successfully or accurately resolved. Hardware remains **NOT YET** and the repository stays private.
+**Hardware verdict: NOT YET.**

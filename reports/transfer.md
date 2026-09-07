@@ -4,7 +4,7 @@ Status: measured, research-only, non-diagnostic.
 
 ## Dataset
 
-Target: Figshare article `28643153`, **A ballistocardiogram dataset with reference ECG signals for bed-based heart rhythm assessment**.
+Target: Figshare article `28643153`, **A ballistocardiogram dataset with reference ECG signals for bedside heart rhythm assessment**.
 
 - license: **CC BY 4.0**
 - 46 participants

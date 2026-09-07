@@ -2,7 +2,7 @@
   "dataset": {
     "article_id": 28643153,
     "api_url": "https://api.figshare.com/v2/articles/28643153",
-    "title": "A ballistocardiogram dataset with reference ECG signals for bed-based heart rhythm assessment",
+    "title": "A ballistocardiogram dataset with reference ECG signals for bedside heart rhythm assessment",
     "license": "CC BY 4.0",
     "sampling_hz": 125,
     "metadata_file": "Overall_info.xlsx",
