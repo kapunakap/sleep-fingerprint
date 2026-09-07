@@ -21,8 +21,11 @@ from sleep_fingerprint.dataset import (
     EXPECTED_ARCHIVE_MD5,
     audit_dataset,
     download_dataset,
+    parse_bcg_csv,
     safe_extract_zip,
 )
+from sleep_fingerprint.errors import QualityError
+from sleep_fingerprint.preprocess import PreprocessConfig, quality_reasons, resample_signal, separate_components
 from sleep_fingerprint.primary_experiment import (
     add_reference_physiology,
     duplicate_signature_collisions,
@@ -114,6 +117,64 @@ def _plot_similarity_summary(primary: dict[str, Any]) -> None:
     plt.close(figure)
 
 
+
+
+def _plot_signal_example(manifest: list[dict[str, Any]], dataset_root: Path) -> None:
+    config = PreprocessConfig()
+    record = min(manifest, key=lambda row: (str(row["subject_id"]), str(row["night_key"])))
+    parsed = parse_bcg_csv(dataset_root / str(record["source_path"]))
+    source_window_samples = int(round(config.window_seconds * parsed.source_fs_hz))
+    source_stride_samples = int(round(config.stride_seconds * parsed.source_fs_hz))
+
+    accepted: tuple[int, np.ndarray, np.ndarray, np.ndarray, np.ndarray] | None = None
+    for start in range(0, parsed.signal.size - source_window_samples + 1, source_stride_samples):
+        raw = np.asarray(parsed.signal[start : start + source_window_samples], dtype=np.float64)
+        resampled = resample_signal(raw, parsed.source_fs_hz, config.target_fs_hz)[: config.window_samples]
+        if resampled.size != config.window_samples or quality_reasons(resampled):
+            continue
+        try:
+            respiratory, cardiac = separate_components(resampled, config)
+        except QualityError:
+            continue
+        accepted = (start, raw, resampled, respiratory, cardiac)
+        break
+
+    if accepted is None:
+        raise RuntimeError("no QC-accepted window available for representative signal plot")
+
+    start, raw, resampled, respiratory, cardiac = accepted
+    display_seconds = 20.0
+    raw_count = min(raw.size, int(round(display_seconds * parsed.source_fs_hz)))
+    target_count = min(resampled.size, int(round(display_seconds * config.target_fs_hz)))
+    raw_time = np.arange(raw_count) / parsed.source_fs_hz
+    target_time = np.arange(target_count) / config.target_fs_hz
+
+    figure, axes = plt.subplots(4, 1, figsize=(11, 9), sharex=True)
+    axes[0].plot(raw_time, raw[:raw_count])
+    axes[0].set_ylabel("Raw BCG")
+    axes[0].set_title(f"Source signal ({parsed.source_fs_hz:g} Hz)")
+    axes[1].plot(target_time, resampled[:target_count])
+    axes[1].set_ylabel("BCG")
+    axes[1].set_title(f"Resampled signal ({config.target_fs_hz:g} Hz)")
+    axes[2].plot(target_time, respiratory[:target_count])
+    axes[2].set_ylabel("Robust z")
+    axes[2].set_title("Respiratory band (0.08-0.7 Hz)")
+    axes[3].plot(target_time, cardiac[:target_count])
+    axes[3].set_ylabel("Robust z")
+    axes[3].set_xlabel("Seconds within accepted 60 s window")
+    axes[3].set_title("Cardiac band (0.7-15 Hz)")
+    figure.suptitle(
+        "Representative primary BCG preprocessing — "
+        f"participant {record['subject_id']}, night {record['night_key']}, "
+        f"source offset {start / parsed.source_fs_hz:.0f} s"
+    )
+    figure.tight_layout()
+    output = PLOTS / "signal_example.svg"
+    figure.savefig(output)
+    plt.close(figure)
+    output.write_text("\n".join(line.rstrip() for line in output.read_text().splitlines()) + "\n")
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     PLOTS.mkdir(parents=True, exist_ok=True)
@@ -126,6 +187,8 @@ def main() -> None:
         raise RuntimeError(f"primary dataset identity mismatch after extraction: {audit}")
     if bad:
         raise RuntimeError(f"primary dataset contains invalid BCG records: {bad[:3]}")
+
+    _plot_signal_example(manifest, EXTRACTED)
 
     night_counts = Counter(record.subject_id for record in records)
     split = make_chronological_half_split(manifest)
