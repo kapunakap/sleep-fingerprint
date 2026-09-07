@@ -1,13 +1,31 @@
 # Local validation
 
-The reconstructed Phase-1 source tree was exercised before publication with the equivalent package code and tests.
+The completed Issue #1 tree has been exercised with the real project environment, not only synthetic inspection.
 
-Observed result:
+Final closeout software validation:
 
 ```text
-17 passed
+pytest
+→ 26 passed
+
+ruff check src tests scripts
+→ All checks passed!
+
+mypy src
+→ Success: no issues found in 14 source files
+
+git diff --check
+→ passed
 ```
 
-These are software/synthetic invariant tests, not scientific public-data results. They cover parsing, safe extraction, resampling/filtering, night-disjoint splitting, retrieval metrics, encoder output normalization, and the no-same-night-positive invariant.
+A clean Python 3.11 bootstrap also succeeded with:
 
-GitHub CI is not yet configured in this repository, so this file must not be interpreted as hosted-CI evidence.
+```bash
+python3.11 -m venv .venv
+. .venv/bin/activate
+pip install -e '.[dev,encoder]'
+```
+
+Scientific execution is recorded separately in the committed metrics/reports. In particular, the post-parser-fix 212-night primary package and the fresh PLOS cross-sensor run both completed successfully.
+
+GitHub Actions **is configured**, but the fresh closeout runs observed during release failed before a runner/workflow step was assigned (`steps: null`). That is a hosted Actions runner/startup infrastructure failure: it is neither a green hosted run nor a code-executed test failure. The executed local validation above is therefore recorded explicitly.
