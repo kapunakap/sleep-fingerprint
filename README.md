@@ -1,18 +1,18 @@
 # Sleep Fingerprint
 
-**Can a mattress sensor identify a person from the micro-vibrations their body produces during sleep?**
+**Can a sensor under your mattress recognize who is sleeping?**
 
-Evidence-first proof of concept using public raw under-mattress ballistocardiography (BCG).
+This project tests a simple idea: your heartbeat, breathing, and tiny body movements shake the mattress in a pattern that may be partly unique to you.
 
 <p align="center">
-  <img src="docs/readme-overview.svg" alt="Sleep Fingerprint overview: under-mattress BCG shows above-chance identity information across held-out nights, but setup and time confounds remain, so the current hardware verdict is not yet." width="100%">
+  <img src="docs/readme-overview.svg" alt="Sleep Fingerprint explained in plain English: a sensor under the mattress records body vibrations, a computer tries to recognize the sleeper on different nights, it performs much better than random on the normal test, but falls back to random on a harder time-separated test, so hardware is not ready yet." width="100%">
 </p>
 
-> **TL;DR:** Identity is clearly above chance across held-out nights, but the signal is still entangled with sensor setup and time. **Hardware: NOT YET.**
+> **TL;DR:** The sensor can recognize people **better than random**, so there is a real identity signal. But on a harder test the result falls back to random, which means time or sensor setup may be helping. **Promising research; not ready for hardware yet.**
 
 **Research software only.** This is not a medical device, diagnostic system, or validated biological-age model.
 
-## Evidence behind the picture
+## Technical results
 
 The public-data POC is reproducible end-to-end, including the post-parser-fix 212-night primary package and an independent frozen cardiovascular-transfer experiment. The evidence is promising but does **not** establish a physiology-only fingerprint independent of bed/sensor/placement/installation effects.
 
