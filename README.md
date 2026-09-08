@@ -81,10 +81,17 @@ The fixed 28-D representation uses source-defined respiratory/cardiac spectral b
 
 ## Reproduction
 
+`requirements/research-lock.txt` records the resolved Python 3.11 research/QA environment. Use it as a constraints file so the scientific stack is repeatable while the package metadata can retain normal lower-bound compatibility.
+
 ```bash
 python3.11 -m venv .venv
 . .venv/bin/activate
-pip install -e '.[dev,encoder]'
+python -m pip install --upgrade pip
+
+# Linux CI uses the CPU wheel explicitly to avoid pulling CUDA packages.
+python -m pip install "torch==2.14.0" --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -e '.[dev,encoder]' -c requirements/research-lock.txt
+python -m pip check
 
 python scripts/run_primary_experiments.py
 python scripts/run_plos_cross_sensor.py
@@ -96,11 +103,13 @@ mypy src
 git diff --check
 ```
 
+On macOS, install `.[dev,encoder]` with the same constraints file and let PyPI provide the native PyTorch wheel; the explicit CPU index above is only for Linux CI/research runners.
+
 The primary runner pins and verifies the Figshare archive, extracts it safely, audits 212 nights, runs the leakage-safe experiment and negative controls, validates reference physiology, checks the exact historical reproduction checkpoint, then writes the final package. Raw third-party datasets and large archives are not committed or redistributed.
 
 ## CI status
 
-The latest hosted GitHub Actions jobs observed for the foundation and experiment branches fail before any workflow step is assigned (`steps: null`). This is characterized as runner/startup infrastructure failure, **not** as a green run and not as a code-executed failure. Local executed validation is therefore recorded separately on the exact accepted branch heads.
+Hosted GitHub Actions on `main` is green: the project environment installs successfully and the pytest, Ruff, and mypy gates execute successfully. Heavy public-data research workflows are separate manual jobs and publish generated results as workflow artifacts instead of writing back to repository branches.
 
 ## POC conclusion
 
