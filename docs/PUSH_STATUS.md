@@ -10,4 +10,4 @@ Merged release layers:
 
 The final merged tree contains all original Issue #1 deliverables. The hardware decision remains **NOT YET** because the POC still lacks true same-person reinstallation evidence and retains material setup/time confounds.
 
-Hosted CI remains characterized separately from local validation: observed GitHub Actions jobs fail before workflow-step execution (`steps: null`), while the exact merge-candidate and final merged trees pass pytest, Ruff, mypy, and `git diff --check` locally.
+Hosted CI is currently green on `main`: dependency installation, pytest, Ruff, and mypy all execute successfully. The repository also keeps heavy public-data research workflows manual and read-only; their generated metrics and plots are reviewed from workflow artifacts rather than pushed back automatically.
