@@ -1,9 +1,6 @@
 name: research-probe
 
 on:
-  push:
-    branches:
-      - codex/issue-1-poc-experiment-evidence
   workflow_dispatch:
 
 permissions:
@@ -19,8 +16,13 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - name: Install probe dependencies
-        run: python -m pip install --upgrade pip numpy scipy pandas openpyxl requests h5py
+          cache-dependency-path: requirements/research-lock.txt
+      - name: Install locked probe environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]" -c requirements/research-lock.txt
+          python -m pip install h5py -c requirements/research-lock.txt
+          python -m pip check
       - name: Inspect one PLOS multichannel participant file
         run: python scripts/probe_plos.py
       - name: Inspect independent transfer metadata
