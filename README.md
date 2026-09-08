@@ -1,14 +1,20 @@
-# sleep-fingerprint
+# Sleep Fingerprint
 
-Evidence-first proof of concept for testing whether public raw under-mattress ballistocardiography (BCG) contains a stable participant fingerprint.
+**Can a mattress sensor identify a person from the micro-vibrations their body produces during sleep?**
+
+Evidence-first proof of concept using public raw under-mattress ballistocardiography (BCG).
+
+<p align="center">
+  <img src="docs/readme-overview.svg" alt="Sleep Fingerprint overview: under-mattress BCG shows above-chance identity information across held-out nights, but setup and time confounds remain, so the current hardware verdict is not yet." width="100%">
+</p>
+
+> **TL;DR:** Identity is clearly above chance across held-out nights, but the signal is still entangled with sensor setup and time. **Hardware: NOT YET.**
 
 **Research software only.** This is not a medical device, diagnostic system, or validated biological-age model.
 
-## Current decision
+## Evidence behind the picture
 
-**Hardware: NOT YET.**
-
-The requested public-data POC is reproducible end-to-end, including the post-parser-fix 212-night primary package and an independent frozen cardiovascular-transfer experiment. The evidence is promising but does **not** establish a physiology-only fingerprint independent of bed/sensor/placement/installation effects.
+The public-data POC is reproducible end-to-end, including the post-parser-fix 212-night primary package and an independent frozen cardiovascular-transfer experiment. The evidence is promising but does **not** establish a physiology-only fingerprint independent of bed/sensor/placement/installation effects.
 
 Key measured evidence:
 
@@ -23,13 +29,21 @@ Key measured evidence:
 
 No verified public dataset currently combines repeated identity-mapped participants, an explicit removal/reinstallation boundary, raw BCG, and participant mapping across installations.
 
-See:
+## What the sensor actually sees
+
+The example below is a representative QC-accepted primary-dataset segment showing the raw/resampled BCG signal and derived respiratory/cardiac structure.
+
+<p align="center">
+  <img src="plots/primary_cross_night/signal_example.svg" alt="Representative under-mattress BCG signal with derived respiratory and cardiac structure" width="100%">
+</p>
+
+## Research artifacts
 
 - `reports/cross-installation.md` — primary cross-night and setup-confound evidence;
 - `reports/transfer.md` — frozen independent-domain transfer protocol and results;
 - `reports/dataset-search.md` — public dataset search and rejection reasons;
 - `reports/hardware-decision.md` — hardware gate;
-- `metrics/primary_cross_night/` and `plots/primary_cross_night/` — completed post-fix primary package, including `signal_example.svg` with a representative QC-accepted raw/resampled/respiratory/cardiac trace;
+- `metrics/primary_cross_night/` and `plots/primary_cross_night/` — completed post-fix primary package;
 - `metrics/plos_cross_sensor/` and `plots/plos_cross_sensor/` — fresh cross-sensor/location rerun;
 - `metrics/transfer_28643153/` — completed frozen-transfer metrics;
 - `metrics/primary_cross_night/recovered_run_33995935636.json` — preserved partial historical recovery artifact, not used as the final primary package.
